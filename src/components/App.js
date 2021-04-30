@@ -6,24 +6,6 @@ const App = () => {
   const [model, setModel] = useState(null);
   const [predictions, setPredictions] = useState(null);
 
-  const lightColors = [
-    "bg-red-50",
-    "bg-yellow-50",
-    "bg-blue-50",
-    "bg-pink-50",
-    "bg-purple-50",
-    "bg-green-50",
-  ];
-
-  const normalColors = [
-    "bg-red-300",
-    "bg-yellow-300",
-    "bg-blue-300",
-    "bg-pink-300",
-    "bg-purple-300",
-    "bg-green-300",
-  ];
-
   const predict = useCallback(async () => {
     if (webcam && model) {
       const prediction = await model.predict(webcam.canvas);
@@ -56,6 +38,22 @@ const App = () => {
     }
   };
 
+  const getAlphabet = () => {
+    let probability = -1;
+    let index = -1;
+    for (let i = 0; i < predictions.length; i++) {
+      let current = predictions[i];
+      if (current.probability > probability) {
+        index = i;
+        probability = current.probability;
+      }
+    }
+    if (index != -1) {
+      return predictions[index].name.toUpperCase();
+    }
+    return predictions[predictions.length - 1].name;
+  };
+
   useEffect(() => {
     if (webcam) {
       const startWebcam = async () => {
@@ -71,7 +69,7 @@ const App = () => {
   }, [webcam, loop]);
 
   useEffect(() => {
-    const URL = "https://teachablemachine.withgoogle.com/models/_btPzUnuE/";
+    const URL = "https://teachablemachine.withgoogle.com/models/6ZExbl23Z/";
     const modelURL = URL + "model.json";
     const metadataURL = URL + "metadata.json";
     tmImage.load(modelURL, metadataURL).then((model) => setModel(model));
@@ -79,51 +77,32 @@ const App = () => {
 
   return (
     <div className="bg-gray-200 h-screen w-full flex flex-col justify-center">
-      <div className="mx-auto w-min flex space-x-4">
-        <div className="space-y-4">
-          <div className="bg-white rounded-md shadow p-4 space-y-4">
-            <div className="text-lg">Preview</div>
-            <canvas
-              id="canvas"
-              width="300"
-              height="300"
-              className="rounded bg-gray-50"
-            ></canvas>
-          </div>
-          <button
-            onClick={handleWebcam}
-            className={`bg-white rounded-md shadow text-lg py-3 w-full ${
-              webcam ? "text-red-500" : "text-blue-500"
-            } ${model ? "hover:bg-gray-50" : "opacity-70 cursor-default"}`}
-            disabled={!model}
-          >
-            {model ? (webcam ? "Stop" : "Start") : "Setting up..."}
-          </button>
+      <div className="mx-auto space-y-4">
+        <div className="bg-white rounded-md shadow p-4 space-y-4">
+          <div className="text-lg">Preview</div>
+          <canvas
+            id="canvas"
+            width="300"
+            height="300"
+            className="rounded bg-gray-50"
+          ></canvas>
         </div>
         {predictions && (
-          <div className="bg-white rounded-md shadow p-4 w-80 space-y-4">
-            <div className="text-lg">Classes</div>
-            <div className="space-y-3">
-              {predictions.map(({ name, probability }, index) => (
-                <div key={index} className="space-y-2">
-                  <div className="text-base text-gray-800">{name}</div>
-                  <div
-                    className={`h-10 rounded w-full flex ${
-                      lightColors[index % lightColors.length]
-                    }`}
-                  >
-                    <div
-                      className={`rounded ${
-                        normalColors[index % normalColors.length]
-                      }`}
-                      style={{ width: probability * 100 + "%" }}
-                    ></div>
-                  </div>
-                </div>
-              ))}
+          <div className="bg-white rounded-md shadow p-4 space-y-4">
+            <div className="flex justify-center">
+              <div className="text-4xl">{getAlphabet()}</div>
             </div>
           </div>
         )}
+        <button
+          onClick={handleWebcam}
+          className={`bg-white rounded-md shadow text-lg py-3 w-full ${
+            webcam ? "text-red-500" : "text-blue-500"
+          } ${model ? "hover:bg-gray-50" : "opacity-70 cursor-default"}`}
+          disabled={!model}
+        >
+          {model ? (webcam ? "Stop" : "Start") : "Setting up..."}
+        </button>
       </div>
     </div>
   );
