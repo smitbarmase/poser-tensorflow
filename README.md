@@ -1,4 +1,7 @@
-# Posex-Tensorflow
+# PoseX-Tensorflow (Project Exhibition 2021)
+
+In this project, we have tried to develop a system that would be helpful for the disabled people having communication difficulties by developing a system that would help them in expressing themselves clearly and easily. Our model successfully converts the entire input sentence into a single visual rather than depicting different words through a GIF/ picture giving the model a much realistic and lively appeal. Much more development on this track can be done as the ASL dictionary is still small and needs to grow eventually. 
+
 
 ### via NPM
 
